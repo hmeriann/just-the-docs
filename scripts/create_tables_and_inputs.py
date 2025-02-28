@@ -185,6 +185,8 @@ def get_runner(platform, architecture):
             return "macos-latest" if architecture == 'arm64' else "macos-13"
         case 'windows':
             return "windows-2019"
+        case 'python':
+            return "ubuntu-22.04-arm" if architecture in ('arm64', 'aarch64') else "ubuntu-latest"
         case _:
             return "ubuntu-22.04-arm" if architecture == 'arm64' else "ubuntu-latest"
 
@@ -245,15 +247,12 @@ def get_tested_binaries_set(con, build_job):
                 tested_binaries.add(build_platform + "_amd64")
     # add python builds
     python_builds = get_deployed_builds(con, build_job)
-    # print("📌", python_builds)
     for row in python_builds:
         pattern = r'[,|(](\w+), cp*'
         match = re.search(pattern, row[0])
         if match:
-            print("📌", build_platform)
             build_platform = match.group(1)
             tested_binaries.add("python-" + build_platform)
-    # print("🍀", tested_binaries)
     return tested_binaries
 
 def create_inputs(build_job, con, build_job_run_id):
@@ -262,7 +261,6 @@ def create_inputs(build_job, con, build_job_run_id):
     extensions_artifacts = get_artifacts_list(con, build_job, "extensions")
     tested_builds_dict = {}
     for row in extensions_artifacts:
-        # print("🪸", row[0])
         pattern =  r'\[duckdb-extensions-([a-zA-Z]+)_(amd64|arm64)'
         match = re.search(pattern, row[0])
         if match:
@@ -298,9 +296,9 @@ def create_inputs(build_job, con, build_job_run_id):
             new_data = {
                 "nightly_build": binary,
                 "duckdb_arch": architecture,
-                "runs_on": get_runner("linux", architecture),
+                "runs_on": get_runner(binary, architecture),
                 "run_id": build_job_run_id,
-                "duckdb_binary": "linux" + "-" + architecture
+                "duckdb_binary": ""
             }
             matrix_data.append(new_data)
     return matrix_data
