@@ -192,9 +192,39 @@ def get_artifacts_list(con, build_job, artifatc_type):
     artifacts = con.execute(f"""
         SELECT Artifact
         FROM '{ build_job.get_artifacts_per_jobs_table_name() }'
-        WHERE Artifact LIKE '[duckdb-{ artifatc_type }%';
+        WHERE Artifact LIKE '[duckdb-{ artifatc_type }%' OR Artifact LIKE '%4-{ artifatc_type }]%';
     """).fetchall()
+    # WHERE Artifact LIKE '[duckdb-{ artifatc_type }%';
     return artifacts
+
+
+def get_deployed_builds(con, build_job):
+    deployed = con.execute(f"""
+        select job_name from (
+            SELECT
+                job_name,
+                steps.name as steps, 
+                steps.conclusion as conclusion,
+                steps.startedAt as startedAt
+            FROM (
+              SELECT
+                    unnest(steps) steps,
+                    databaseId,
+                    job_name 
+              FROM (
+                  SELECT
+                        unnest(jobs)['steps'] steps,
+                        unnest(jobs)['databaseId'] databaseId,
+                        unnest(jobs)['name'] job_name 
+                  FROM { build_job.get_steps_table_name() }
+                )
+            )
+            WHERE conclusion == 'success')
+        WHERE 
+            job_name LIKE '%Python 3 Linux%' AND
+            steps LIKE '%Deploy%';
+    """).fetchall()
+    return deployed
 
 def get_tested_binaries_set(con, build_job):
     # array of testable binaries like 'windows-amd64' extracted from a line 
@@ -213,6 +243,17 @@ def get_tested_binaries_set(con, build_job):
             elif build_platform == 'osx':
                 tested_binaries.add(build_platform + "_arm64")
                 tested_binaries.add(build_platform + "_amd64")
+    # add python builds
+    python_builds = get_deployed_builds(con, build_job)
+    # print("📌", python_builds)
+    for row in python_builds:
+        pattern = r'[,|(](\w+), cp*'
+        match = re.search(pattern, row[0])
+        if match:
+            print("📌", build_platform)
+            build_platform = match.group(1)
+            tested_binaries.add("python-" + build_platform)
+    # print("🍀", tested_binaries)
     return tested_binaries
 
 def create_inputs(build_job, con, build_job_run_id):
@@ -221,6 +262,7 @@ def create_inputs(build_job, con, build_job_run_id):
     extensions_artifacts = get_artifacts_list(con, build_job, "extensions")
     tested_builds_dict = {}
     for row in extensions_artifacts:
+        # print("🪸", row[0])
         pattern =  r'\[duckdb-extensions-([a-zA-Z]+)_(amd64|arm64)'
         match = re.search(pattern, row[0])
         if match:
@@ -237,16 +279,30 @@ def create_inputs(build_job, con, build_job_run_id):
                     "duckdb_binary": platform if platform == 'osx' else platform + "-" + architecture
                 }
                 matrix_data.append(new_data)
-                # also add python extensions for linux, ignore windows and ubuntu for now
-                if platform.startswith('linux'):
-                    new_data = {
-                        "nightly_build": "python",
-                        "duckdb_arch": architecture,
-                        "runs_on": get_runner(platform, architecture),
-                        "run_id": build_job_run_id,
-                        "duckdb_binary": platform + "-" + architecture
-                    }
-                    matrix_data.append(new_data)
+        elif row[0].count("windows"):
+            new_data = {
+                "nightly_build": "windows",
+                "duckdb_arch": "amd64",
+                "runs_on": "windows-2019",
+                "run_id": build_job_run_id,
+                "duckdb_binary": "windows-amd64"
+            }
+            matrix_data.append(new_data)
+            tested_binaries.remove("windows_amd64")
+    if len(tested_binaries) > 0:
+        for binary in tested_binaries:
+            # also add python extensions for linux, ignore windows and ubuntu for now
+            # architecture = binary.split("-")[1]
+            binary, architecture = binary.split("-")
+            print(architecture)
+            new_data = {
+                "nightly_build": binary,
+                "duckdb_arch": architecture,
+                "runs_on": get_runner("linux", architecture),
+                "run_id": build_job_run_id,
+                "duckdb_binary": "linux" + "-" + architecture
+            }
+            matrix_data.append(new_data)
     return matrix_data
 
 def main():
@@ -262,7 +318,6 @@ def main():
     create_failed_jobs_table(build_job, con)
     
     matrix_data = create_inputs(build_job, con, build_job_run_id)
-    print("#####", matrix_data)
     with open("inputs.json", "w") as f:
         json.dump(matrix_data, f, indent=4)
     con.close()
