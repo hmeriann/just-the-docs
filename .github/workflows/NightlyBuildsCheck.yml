@@ -207,7 +207,9 @@ jobs:
           git config --global user.email "zuleykha.pavlichenkova@gmail.com"
           
           git config pull.rebase false
-          git pull origin main
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+          git pull origin $CURRENT_BRANCH
 
           cp ${{ needs.get-run-info.outputs.CURR_DATE }}-report.md docs/
 
@@ -215,4 +217,12 @@ jobs:
 
           git add docs/${{ needs.get-run-info.outputs.CURR_DATE }}-report.md
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
-          git push origin main --allow-unrelated-histories
+          
+          git checkout main
+          git pull origin main
+
+          git checkout $CURRENT_BRANCH -- docs/${{ needs.get-run-info.outputs.CURR_DATE }}-report.md
+          git add docs/${{ needs.get-run-info.outputs.CURR_DATE }}-report.md
+          git commit -m "Merge only the report file from $CURRENT_BRANCH to main"
+
+          git push origin main
