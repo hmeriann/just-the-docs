@@ -215,4 +215,4 @@ jobs:
 
           git add docs/${{ needs.get-run-info.outputs.CURR_DATE }}-report.md
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
-          git push origin main
+          git push origin main --allow-unrelated-histories
