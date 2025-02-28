@@ -211,18 +211,18 @@ jobs:
 
           git pull origin $CURRENT_BRANCH
 
-          cp ${{ needs.get-run-info.outputs.CURR_DATE }}-report.md docs/${{ needs.get-run-info.outputs.CURR_DATE }}-report-$CURRENT_BRANCH.md
+          cp ${{ needs.get-run-info.outputs.CURR_DATE }}-report.md docs/$CURRENT_BRANCH/${{ needs.get-run-info.outputs.CURR_DATE }}-report.md
 
           ls -lah docs
 
-          git add docs/${{ needs.get-run-info.outputs.CURR_DATE }}-report-$CURRENT_BRANCH.md
+          git add docs/$CURRENT_BRANCH/${{ needs.get-run-info.outputs.CURR_DATE }}-report.md
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           
           git checkout main
           git pull origin main
 
-          git checkout $CURRENT_BRANCH -- docs/${{ needs.get-run-info.outputs.CURR_DATE }}-report-$CURRENT_BRANCH.md
-          git add docs/${{ needs.get-run-info.outputs.CURR_DATE }}-report-$CURRENT_BRANCH.md
+          git checkout $CURRENT_BRANCH -- docs/$CURRENT_BRANCH/${{ needs.get-run-info.outputs.CURR_DATE }}-report.md
+          git add docs/$CURRENT_BRANCH/${{ needs.get-run-info.outputs.CURR_DATE }}-report.md
           git commit -m "Merge only the report file from $CURRENT_BRANCH to main"
 
           git push origin main
