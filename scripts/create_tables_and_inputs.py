@@ -200,9 +200,9 @@ def get_artifacts_list(con, build_job, artifatc_type):
     return artifacts
 
 
-def get_deployed_builds(con, build_job):
+def get_deployed_python_builds(con, build_job):
     deployed = con.execute(f"""
-        select job_name from (
+        SELECT job_name FROM (
             SELECT
                 job_name,
                 steps.name as steps, 
@@ -246,7 +246,7 @@ def get_tested_binaries_set(con, build_job):
                 tested_binaries.add(build_platform + "_arm64")
                 tested_binaries.add(build_platform + "_amd64")
     # add python builds
-    python_builds = get_deployed_builds(con, build_job)
+    python_builds = get_deployed_python_builds(con, build_job)
     for row in python_builds:
         pattern = r'[,|(](\w+), cp*'
         match = re.search(pattern, row[0])
