@@ -260,33 +260,33 @@ def create_inputs(build_job, con, build_job_run_id):
     tested_binaries = get_tested_binaries_set(con, build_job)
     extensions_artifacts = get_artifacts_list(con, build_job, "extensions")
     tested_builds_dict = {}
-    for row in extensions_artifacts:
-        pattern =  r'\[duckdb-extensions-([a-zA-Z]+)_(amd64|arm64)'
-        match = re.search(pattern, row[0])
-        if match:
-            platform = match.group(1)
-            architecture = match.group(2)
-            duckdb_arch = platform + "_" + architecture
-            if duckdb_arch in tested_binaries:
-                tested_binaries.remove(duckdb_arch)
-                new_data = {
-                    "nightly_build": platform,
-                    "duckdb_arch": architecture,
-                    "runs_on": get_runner(platform, architecture),
-                    "run_id": build_job_run_id,
-                    "duckdb_binary": platform if platform == 'osx' else platform + "-" + architecture
-                }
-                matrix_data.append(new_data)
-        elif row[0].count("windows"):
-            new_data = {
-                "nightly_build": "windows",
-                "duckdb_arch": "amd64",
-                "runs_on": "windows-2019",
-                "run_id": build_job_run_id,
-                "duckdb_binary": "windows-amd64"
-            }
-            matrix_data.append(new_data)
-            tested_binaries.remove("windows_amd64")
+    # for row in extensions_artifacts:
+    #     pattern =  r'\[duckdb-extensions-([a-zA-Z]+)_(amd64|arm64)'
+    #     match = re.search(pattern, row[0])
+    #     if match:
+    #         platform = match.group(1)
+    #         architecture = match.group(2)
+    #         duckdb_arch = platform + "_" + architecture
+    #         if duckdb_arch in tested_binaries:
+    #             tested_binaries.remove(duckdb_arch)
+    #             new_data = {
+    #                 "nightly_build": platform,
+    #                 "duckdb_arch": architecture,
+    #                 "runs_on": get_runner(platform, architecture),
+    #                 "run_id": build_job_run_id,
+    #                 "duckdb_binary": platform if platform == 'osx' else platform + "-" + architecture
+    #             }
+    #             matrix_data.append(new_data)
+    #     elif row[0].count("windows"):
+    #         new_data = {
+    #             "nightly_build": "windows",
+    #             "duckdb_arch": "amd64",
+    #             "runs_on": "windows-2019",
+    #             "run_id": build_job_run_id,
+    #             "duckdb_binary": "windows-amd64"
+    #         }
+    #         matrix_data.append(new_data)
+    #         tested_binaries.remove("windows_amd64")
     # if len(tested_binaries) > 0:
     #     for binary in tested_binaries:
     #         # also add python extensions for linux, ignore windows and ubuntu for now
@@ -301,6 +301,50 @@ def create_inputs(build_job, con, build_job_run_id):
     #             "duckdb_binary": ""
     #         }
     #         matrix_data.append(new_data)
+
+    matrix_data.append({
+        "nightly_build": "linux",
+        "duckdb_arch": "aarch64",
+        "runs_on": "ubuntu-22.04-arm",
+        "run_id": 13665806120,
+        "duckdb_binary": "linux-aarch64"
+    })
+    matrix_data.append({
+        "nightly_build": "linux",
+        "duckdb_arch": "arm64",
+        "runs_on": "ubuntu-latest",
+        "run_id": 13665806120,
+        "duckdb_binary": "linux"
+    })
+    matrix_data.append({
+        "nightly_build": "python",
+        "duckdb_arch": "aarch64",
+        "runs_on": "ubuntu-22.04-arm",
+        "run_id": 13665806120,
+        "duckdb_binary": ""
+    })
+    matrix_data.append({
+        "nightly_build": "python",
+        "duckdb_arch": "arm64",
+        "runs_on": "ubuntu-latest",
+        "run_id": 13665806120,
+        "duckdb_binary": ""
+    })
+    matrix_data.append({
+        "nightly_build": "osx",
+        "duckdb_arch": "amd64",
+        "runs_on": "macos-13",
+        "run_id": 13665806120,
+        "duckdb_binary": "osx"
+    })
+    matrix_data.append({
+        "nightly_build": "osx",
+        "duckdb_arch": "arm64",
+        "runs_on": "macos-latest",
+        "run_id": 13665806120,
+        "duckdb_binary": "osx"
+    })
+
     return matrix_data
 
 def main():
