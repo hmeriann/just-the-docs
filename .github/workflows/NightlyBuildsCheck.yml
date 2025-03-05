@@ -117,16 +117,21 @@ jobs:
           CURR_DATE: ${{ needs.get-run-info.outputs.CURR_DATE }}
         run: |
             uname -m
-            if [[ ${{ matrix.inputs.nightly_build }} != 'python' ]]; then
+            # if [[ ${{ matrix.inputs.nightly_build }} != 'python' ]]; then
+            #   echo "Downloading duckdb-binaries-${{ matrix.inputs.duckdb_binary }} artifact..."
+            #   if gh run download ${{ matrix.inputs.run_id }} --repo ${{ env.GH_REPO }} -n duckdb-binaries-${{ matrix.inputs.duckdb_binary }}; then
+            #       echo "Artifact duckdb-binaries-${{ matrix.inputs.duckdb_binary }} is successfuly downloaded."
+            #       if [[ ${{ matrix.inputs.nightly_build }} == 'osx' ]]; then
+            #         unzip duckdb_cli-*.zip -d duckdb_path
+            #       else
+            #         unzip duckdb_cli-${{ matrix.inputs.duckdb_binary }}.zip -d duckdb_path
+            #       fi
+            #   fi
+            # fi
+            if [[ ${{ matrix.inputs.nightly_build }} == 'windows' ]]; then
               echo "Downloading duckdb-binaries-${{ matrix.inputs.duckdb_binary }} artifact..."
-              if gh run download ${{ matrix.inputs.run_id }} --repo ${{ env.GH_REPO }} -n duckdb-binaries-${{ matrix.inputs.duckdb_binary }}; then
-                  echo "Artifact duckdb-binaries-${{ matrix.inputs.duckdb_binary }} is successfuly downloaded."
-                  if [[ ${{ matrix.inputs.nightly_build }} == 'osx' ]]; then
-                    unzip duckdb_cli-*.zip -d duckdb_path
-                  else
-                    unzip duckdb_cli-${{ matrix.inputs.duckdb_binary }}.zip -d duckdb_path
-                  fi
-              fi
+              wget https://duckdb-staging.s3.us-east-2.amazonaws.com/8e52ec4395/v1.2.1/duckdb/duckdb/github_release/duckdb_cli-windows-${{ matrix.inputs.duckdb_arch }}.zip
+              unzip duckdb_cli-*.zip -d duckdb_path
             fi
             echo "Verifying version and testing extensions..."
             python scripts/verify_and_test.py \
