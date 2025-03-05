@@ -311,7 +311,7 @@ def create_inputs(build_job, con, build_job_run_id):
     })
     matrix_data.append({
         "nightly_build": "linux",
-        "duckdb_arch": "arm64",
+        "duckdb_arch": "amd64",
         "runs_on": "ubuntu-latest",
         "run_id": 13665806120,
         "duckdb_binary": "linux"
@@ -325,7 +325,7 @@ def create_inputs(build_job, con, build_job_run_id):
     })
     matrix_data.append({
         "nightly_build": "python",
-        "duckdb_arch": "arm64",
+        "duckdb_arch": "amd64",
         "runs_on": "ubuntu-latest",
         "run_id": 13665806120,
         "duckdb_binary": ""
