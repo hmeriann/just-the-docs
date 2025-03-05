@@ -287,20 +287,20 @@ def create_inputs(build_job, con, build_job_run_id):
             }
             matrix_data.append(new_data)
             tested_binaries.remove("windows_amd64")
-    if len(tested_binaries) > 0:
-        for binary in tested_binaries:
-            # also add python extensions for linux, ignore windows and ubuntu for now
-            # architecture = binary.split("-")[1]
-            binary, architecture = binary.split("-")
-            print(architecture)
-            new_data = {
-                "nightly_build": binary,
-                "duckdb_arch": architecture,
-                "runs_on": get_runner(binary, architecture),
-                "run_id": build_job_run_id,
-                "duckdb_binary": ""
-            }
-            matrix_data.append(new_data)
+    # if len(tested_binaries) > 0:
+    #     for binary in tested_binaries:
+    #         # also add python extensions for linux, ignore windows and ubuntu for now
+    #         # architecture = binary.split("-")[1]
+    #         binary, architecture = binary.split("-")
+    #         print(architecture)
+    #         new_data = {
+    #             "nightly_build": binary,
+    #             "duckdb_arch": architecture,
+    #             "runs_on": get_runner(binary, architecture),
+    #             "run_id": build_job_run_id,
+    #             "duckdb_binary": ""
+    #         }
+    #         matrix_data.append(new_data)
     return matrix_data
 
 def main():
