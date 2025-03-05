@@ -97,7 +97,9 @@ jobs:
             python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install duckdb docker
+        run: |
+          pip install duckdb docker
+          sudo apt-get update -y -qq && sudo apt-get install -y wget
             
       - name: Checkout repo with the scripts
         uses: actions/checkout@v4
