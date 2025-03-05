@@ -344,6 +344,13 @@ def create_inputs(build_job, con, build_job_run_id):
         "run_id": 13665806120,
         "duckdb_binary": "osx"
     })
+    matrix_data.append({
+        "nightly_build": "windows",
+        "duckdb_arch": "amd64",
+        "runs_on": "windows-2019",
+        "run_id": 13665806120,
+        "duckdb_binary": "windows-amd64"
+    })
 
     return matrix_data
 
