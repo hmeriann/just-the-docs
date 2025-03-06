@@ -109,6 +109,7 @@ def create_build_report(build_job, con):
                         binary = binary.replace("-", "_")
                         join_list += f'i."{ binary }".concat(l."{ binary }") as "{ binary }", '
                 if len(join_list) > 0:
+                    print(join_list)
                     con.execute(f"""
                         CREATE OR REPLACE TABLE ext_results AS (
                             SELECT * FROM read_csv('{ file_name_pattern }'));
@@ -163,6 +164,7 @@ def create_build_report(build_job, con):
                             py_join_list += f'i."python_{ version }".concat(l."python_{ version }") AS "python_{ version }",'
 
             if len(py_join_list) > 0:
+                print(py_join_list)
                 con.execute(f"""
                     CREATE OR REPLACE TABLE py_ext_results AS (
                         SELECT * FROM read_csv('{ file_name_pattern }'));
