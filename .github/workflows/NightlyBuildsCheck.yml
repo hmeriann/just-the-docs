@@ -27,7 +27,8 @@ concurrency:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  GH_REPO: duckdb/duckdb
+  # GH_REPO: duckdb/duckdb
+  GH_REPO: hmeriann/duckdb-build-status
   GH_ISSUE_REPO: ${{ github.repository }}
 
 jobs:
@@ -43,6 +44,8 @@ jobs:
 
       - name: Checkout repo with the script
         uses: actions/checkout@v4
+        with:
+          repository:${{ env.GH_REPO }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -105,11 +108,13 @@ jobs:
             
       - name: Checkout repo with the scripts
         uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GH_REPO }}
 
       - name: Checkout repo with extensions config file
         uses: actions/checkout@v4
         with:
-            repository: ${{ env.GH_REPO }}
+            # repository: ${{ env.GH_REPO }}
             sparse-checkout: |
                 .github/config
             path: ext
@@ -166,6 +171,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GH_REPO }}
       
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -219,6 +226,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GH_REPO }}
 
       - name: Download Reports
         uses: actions/download-artifact@v4
