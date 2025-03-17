@@ -27,7 +27,7 @@ concurrency:
 
 env:
   GH_TOKEN: ${{ github.token }}
-  GH_REPO: duckdb/duckdb-build-status
+  GH_REPO: ${{ github.repository_owner }}/duckdb-build-status
   GH_ISSUE_REPO: ${{ github.repository }}
 
 jobs:
@@ -44,7 +44,7 @@ jobs:
       - name: Checkout repo with the script
         uses: actions/checkout@v4
         with:
-          repository:${{ env.GH_REPO }}
+          repository: ${{ env.GH_REPO }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
