@@ -80,10 +80,10 @@ jobs:
       - name: Read JSON and create matrix
         id: set-outputs
         run: |
-          matrix=$(cat inputs.json | jq -c '.')
+          matrix=$(cat inputs_${{ inputs.branch }}.json | jq -c '.')
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
           echo "***"
-          cat inputs.json
+          cat inputs_${{ inputs.branch }}.json
 
   run-tests:
     name: ${{ matrix.config.branch }} - ${{ matrix.config.nightly_build }} ${{ matrix.config.duckdb_arch }} (${{ matrix.config.runs_on }})
