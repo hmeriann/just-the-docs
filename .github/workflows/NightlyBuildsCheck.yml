@@ -1,5 +1,7 @@
 name: Check Nightly Build Status
 on:
+  schedule:
+    - cron: '0 9 * * *' # runs at 11am CEST (replace the las * with 1-5 to trigger only on working days)
   workflow_call:
     inputs:
       branch:
@@ -22,13 +24,12 @@ permissions:
   issues: write
 
 concurrency:
-  group: status-${{ github.workflow }}-${{ github.ref_name }}
-  cancel-in-progress: true
+  group: status-${{ github.workflow }}
+  cancel-in-progress: false
 
 env:
   GH_TOKEN: ${{ github.token }}
-  # GH_REPO: duckdb/duckdb
-  GH_REPO: hmeriann/duckdb-build-status
+  GH_REPO: duckdb/duckdb-build-status
   GH_ISSUE_REPO: ${{ github.repository }}
 
 jobs:
@@ -114,7 +115,6 @@ jobs:
       - name: Checkout repo with extensions config file
         uses: actions/checkout@v4
         with:
-            # repository: ${{ env.GH_REPO }}
             sparse-checkout: |
                 .github/config
             path: ext
