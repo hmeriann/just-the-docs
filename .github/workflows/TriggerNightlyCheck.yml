@@ -1,5 +1,6 @@
 name: Trigger Nightly Build Status Check
 on:
+  push:
   schedule:
     - cron: '0 9 * * *' # runs at 11am CEST (replace the las * with 1-5 to trigger only on working days)
   workflow_dispatch:
