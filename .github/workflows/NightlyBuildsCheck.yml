@@ -22,8 +22,8 @@ permissions:
   issues: write
 
 concurrency:
-  group: status-${{ github.workflow }}
-  cancel-in-progress: false
+  group: status-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
 
 env:
   GH_TOKEN: ${{ github.token }}
