@@ -239,6 +239,8 @@ jobs:
         env:
             CI_COMMIT_MESSAGE: "Add ${{ needs.get-run-info.outputs.CURR_DATE }} Reports"
         run: |
+          echo "inputs.should_publish ${{ inputs.should_publish }}"
+          
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
         
