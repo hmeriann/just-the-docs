@@ -260,4 +260,36 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: 'hmeriann/duckdb-build-status'
           branch: 'main'
+
+      # - name: Upload REPORT to the docs directory
+      #   shell: bash
+      #   env:
+      #     CI_COMMIT_MESSAGE: "Add ${{ needs.get-run-info.outputs.CURR_DATE }} Reports"
+      #     CI_COMMIT_AUTHOR: "hmeriann"
+      #     GH_TOKEN: ${{ github.token }}
+      #   run: |
+      #     git config --global user.name ${{ env.CI_COMMIT_AUTHOR }}
+      #     git config --global user.email "zuleykha.pavlichenkova@gmail.com"
+          
+      #     git config pull.rebase false
+      #     git pull origin main
+
+      #     mkdir -p docs/
+      #     mkdir -p docs/main
+      #     mkdir -p docs/v1.2-histrionicus
+
+      #     ls -lah
+          
+      #     mv REPORT*/${{ needs.get-run-info.outputs.CURR_DATE }}-main.md docs/main/
+      #     mv REPORT*/${{ needs.get-run-info.outputs.CURR_DATE }}-v1.2-histrionicus.md docs/v1.2-histrionicus/
+
+      #     ls -lah docs/main
+      #     ls -lah docs/v1.2-histrionicus
+
+      #     git add docs/main/${{ needs.get-run-info.outputs.CURR_DATE }}-*.md
+      #     git add docs/v1.2-histrionicus/${{ needs.get-run-info.outputs.CURR_DATE }}-*.md
+      #     git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+      #     git push origin main
+  
