@@ -238,9 +238,10 @@ jobs:
         shell: bash
         env:
             CI_COMMIT_MESSAGE: "Add ${{ needs.get-run-info.outputs.CURR_DATE }} Reports"
+            TARGET_REPO_PAT: ${{ secrets.TARGET_REPO_PAT }}
         run: |
           echo "inputs.should_publish ${{ inputs.should_publish }}"
-          
+
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
         
@@ -253,6 +254,8 @@ jobs:
           ls -lah
         
           mv REPORT*/${{ needs.get-run-info.outputs.CURR_DATE }}-${{ inputs.branch }}.md docs/${{ inputs.branch }}/
+          
+          git remote set-url origin https://x-access-token:${TARGET_REPO_PAT}@github.com/hmeriann/duckdb-build-status.git
           git add docs/${{ inputs.branch }}/${{ needs.get-run-info.outputs.CURR_DATE }}-*.md
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
         
@@ -261,7 +264,7 @@ jobs:
       - name: Push REPORT
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.TARGET_REPO_PAT }}
           repository: 'hmeriann/duckdb-build-status'
           branch: 'main'
 
